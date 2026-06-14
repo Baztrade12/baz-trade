@@ -1,0 +1,87 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Trade {
+  id                Int       @id @default(autoincrement())
+  orderId           String    @unique
+  symbol            String
+  side              String    // 'buy' or 'sell'
+  type              String    // 'market' or 'limit'
+  quantity          Float
+  entryPrice        Float
+  exitPrice         Float?
+  leverage          Int
+  fundingRate       Float
+  profit            Float?
+  fees              Float?
+  status            String    // 'open', 'closed', 'cancelled'
+  entryTime         DateTime  @default(now())
+  exitTime          DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([symbol])
+  @@index([status])
+  @@index([entryTime])
+}
+
+model Position {
+  id                Int       @id @default(autoincrement())
+  symbol            String    @unique
+  side              String    // 'long', 'short'
+  quantity          Float
+  entryPrice        Float
+  markPrice         Float
+  unrealizedPnL     Float
+  leverage          Int
+  fundingRate       Float
+  nextFundingTime   DateTime
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([symbol])
+  @@index([side])
+}
+
+model FundingRateHistory {
+  id                Int       @id @default(autoincrement())
+  symbol            String
+  fundingRate       Float
+  timestamp         DateTime
+  createdAt         DateTime  @default(now())
+
+  @@index([symbol])
+  @@index([timestamp])
+}
+
+model BotConfig {
+  id                Int       @id @default(autoincrement())
+  key               String    @unique
+  value             String
+  description       String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
+
+model Alert {
+  id                Int       @id @default(autoincrement())
+  type              String    // 'trade', 'opportunity', 'error'
+  message           String
+  symbol            String?
+  severity          String    // 'info', 'warning', 'error'
+  read              Boolean   @default(false)
+  createdAt         DateTime  @default(now())
+
+  @@index([type])
+  @@index([severity])
+  @@index([read])
+}

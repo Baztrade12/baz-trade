@@ -1,33 +1,81 @@
-version: '3.8'
+version: '3.9'
 
 services:
-  mongodb:
-    image: mongo:6.0
-    ports:
-      - '27017:27017'
+  postgres:
+    image: postgres:15-alpine
+    container_name: baz_postgres
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: password
+      POSTGRES_USER: baz_user
+      POSTGRES_PASSWORD: baz_password
+      POSTGRES_DB: baz_trade_db
     volumes:
-      - mongodb_data:/data/db
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
     healthcheck:
-      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      test: ["CMD-SHELL", "pg_isready -U baz_user"]
       interval: 10s
       timeout: 5s
       retries: 5
 
   redis:
-    image: redis:7.0-alpine
+    image: redis:7-alpine
+    container_name: baz_redis
     ports:
-      - '6379:6379'
-    volumes:
-      - redis_data:/data
+      - "6379:6379"
     healthcheck:
-      test: ['CMD', 'redis-cli', 'ping']
+      test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
+    volumes:
+      - redis_data:/data
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: baz_backend
+    ports:
+      - "5000:5000"
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://baz_user:baz_password@postgres:5432/baz_trade_db
+      REDIS_URL: redis://redis:6379
+      BINANCE_API_KEY: ${BINANCE_API_KEY}
+      BINANCE_API_SECRET: ${BINANCE_API_SECRET}
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    command: npm run dev
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: baz_frontend
+    ports:
+      - "3000:3000"
+    environment:
+      REACT_APP_API_URL: http://localhost:5000
+      REACT_APP_WS_URL: ws://localhost:5000
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: npm start
 
 volumes:
-  mongodb_data:
+  postgres_data:
   redis_data:
+
+networks:
+  default:
+    name: baz_network

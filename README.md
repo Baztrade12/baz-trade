@@ -1,112 +1,180 @@
-# BAZ Crypto Tech - Funding Rate Arbitrage Bot
+# BAZ Crypto Tech - Funding Rate Arbitrage Trading Bot
 
-Bot trading otomatis yang memanfaatkan funding rate arbitrage di Binance dengan high-frequency trading.
+🤖 **High-Frequency Trading Bot** untuk Binance Funding Rate Arbitrage
 
-## 🎯 Fitur Utama
+## 📋 Deskripsi
 
-- **Funding Rate Arbitrage**: Deteksi token dengan funding rate ekstrem (long/short)
-- **High-Frequency Execution**: Eksekusi cepat di detik akhir periode funding
-- **Smart Entry/Exit**: Entry di peak funding rate, exit saat profit
-- **Institutional Dashboard**: Real-time monitoring dan analytics
-- **Performance Tracking**: Daily, monthly, yearly analytics
-- **Portfolio Management**: Diversifikasi risiko otomatis
-- **Telegram Alerts**: Notifikasi trade real-time
+BAZ Crypto Tech adalah bot trading otomatis yang memanfaatkan funding rate arbitrage di Binance. Bot ini:
+- ✅ Mencari token dengan funding rate negatif tinggi (LONG opportunities)
+- ✅ Mencari token dengan funding rate positif tinggi (SHORT opportunities)
+- ✅ Eksekusi trade di detik-detik akhir funding rate cycle (setiap 8 jam)
+- ✅ Scalping strategy dengan profit kecil namun konsisten (di atas fees)
+- ✅ Infrastructure cepat untuk eksekusi optimal
+- ✅ Dashboard institutional-grade untuk monitoring
 
-## 📁 Struktur Proyek
+## 🏗️ Struktur Project
 
 ```
 baz-trade/
-├── backend/                 # Node.js + Express API
+├── backend/                 # Node.js bot dan API server
 │   ├── src/
-│   │   ├── services/       # Business logic
-│   │   ├── controllers/    # API handlers
-│   │   ├── models/         # Database schemas
-│   │   ├── utils/          # Helper functions
-│   │   └── config/         # Configuration
-│   └── package.json
-├── bot/                    # Trading bot (separate service)
-│   ├── src/
+│   │   ├── bot/            # Core trading bot logic
+│   │   ├── services/       # Binance API, DB, Cache
 │   │   ├── strategies/     # Trading strategies
-│   │   ├── services/       # Bot services
-│   │   └── config/         # Bot configuration
-│   └── package.json
-├── dashboard/              # React frontend
+│   │   ├── utils/          # Helpers dan utilities
+│   │   └── api/            # REST API endpoints
+│   ├── Dockerfile
+│   ├── package.json
+│   └── tsconfig.json
+├── frontend/                # React dashboard
 │   ├── src/
-│   │   ├── components/     # React components
-│   │   ├── pages/          # Page components
-│   │   ├── services/       # API services
-│   │   └── utils/          # Helper utilities
+│   │   ├── components/     # UI components
+│   │   ├── pages/          # Pages
+│   │   ├── hooks/          # Custom hooks
+│   │   ├── services/       # API clients
+│   │   └── utils/          # Helpers
+│   ├── Dockerfile
 │   └── package.json
-└── docker-compose.yml      # Local development
+├── docker-compose.yml
+└── .env.example
 ```
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 - Node.js 18+
-- MongoDB
+- Docker & Docker Compose
+- Binance API Keys (Futures)
 - Redis
-- Binance API Keys
+- PostgreSQL
 
 ### Installation
 
-1. Clone repository
 ```bash
+# Clone repo
 git clone https://github.com/baztrade657-arch/baz-trade.git
 cd baz-trade
-```
 
-2. Setup environment
-```bash
+# Setup environment
 cp .env.example .env
-# Edit .env dengan API keys Anda
-```
+# Edit .env dengan Binance API keys Anda
 
-3. Install dependencies
-```bash
-# Backend
-cd backend && npm install
-cd ../
-
-# Bot
-cd bot && npm install
-cd ../
-
-# Dashboard
-cd dashboard && npm install
-cd ../
-```
-
-4. Run services
-```bash
+# Start dengan Docker Compose
 docker-compose up -d
-npm run dev
+
+# Dashboard: http://localhost:3000
+# Bot API: http://localhost:5000
 ```
 
-## 📊 Dashboard Features
+## 📊 Fitur Dashboard
 
-- Real-time trading metrics
-- Portfolio performance analytics
-- Funding rate charts
-- Trade history & profitability
-- Risk management controls
-- Start/Stop bot controls
+- 🎛️ **Control Panel**: Start/Stop bot dalam satu klik
+- 📈 **Real-time Charts**: Price, Funding Rate, Portfolio
+- 💼 **Portfolio Tracking**: Position, P&L, Holdings
+- 📊 **Performance Analytics**: Daily/Monthly/Yearly stats
+- 🔔 **Alerts & Notifications**: Real-time trade updates
+- 📱 **Responsive Design**: Mobile-friendly interface
+- 🏛️ **Institutional Grade**: Professional UI/UX
 
-## ⚙️ Configuration
+## 🤖 Bot Strategy
 
-Edit file konfigurasi sesuai kebutuhan:
-- `backend/.env` - API dan database config
-- `bot/.env` - Bot trading parameters
-- `dashboard/.env` - Frontend API endpoint
+### Funding Rate Arbitrage
 
-## 📈 Performance Metrics
+1. **Scan** 24/7: Monitor funding rates semua token
+2. **Identify**: Temukan opportunities dengan spread besar
+3. **Execute**: Trade di 5-10 menit sebelum funding time
+4. **Manage**: Hold hingga funding paid (8 jam)
+5. **Close**: Exit dengan profit minimal di atas fees
+6. **Repeat**: Cycle setiap 8 jam
 
-- Win Rate Tracking
-- ROI Calculation
-- Drawdown Analysis
-- Risk/Reward Ratio
-- Daily/Monthly/Yearly Statistics
+### Risk Management
 
-## ⚠️ Risk Disclaimer
+- Position sizing based on account balance
+- Max portfolio heat limit
+- Stoploss on adverse moves
+- Slippage protection
+- Rate limiting pada Binance API
 
-Cryptocurrency trading melibatkan risiko tinggi. Mulai dengan modal kecil untuk testing.
+## 🔧 API Endpoints
+
+### Bot Control
+```
+POST   /api/bot/start        - Start trading
+POST   /api/bot/stop         - Stop trading
+GET    /api/bot/status       - Get bot status
+GET    /api/bot/stats        - Get statistics
+```
+
+### Trading Data
+```
+GET    /api/trades           - List all trades
+GET    /api/positions        - Current positions
+GET    /api/funding-rates    - Monitor funding rates
+GET    /api/opportunities    - Active opportunities
+```
+
+### Portfolio
+```
+GET    /api/portfolio        - Portfolio summary
+GET    /api/performance      - P&L performance
+GET    /api/history          - Trade history
+```
+
+## 📦 Tech Stack
+
+### Backend
+- **Runtime**: Node.js 18+
+- **Language**: TypeScript
+- **Framework**: Express.js
+- **Database**: PostgreSQL + Redis
+- **API Client**: Binance API (ccxt)
+- **Task Queue**: Bull
+- **Real-time**: Socket.io
+
+### Frontend
+- **Framework**: React 18
+- **State**: Redux Toolkit
+- **Charts**: TradingView Lightweight Charts
+- **UI**: Material-UI v5
+- **HTTP**: Axios
+- **Real-time**: Socket.io-client
+
+## 📝 Environment Variables
+
+```bash
+# Binance API
+BINANCE_API_KEY=your_key
+BINANCE_API_SECRET=your_secret
+
+# Database
+DATABASE_URL=postgresql://user:pass@localhost:5432/baz_trade
+REDIS_URL=redis://localhost:6379
+
+# Bot Config
+BOT_INITIAL_BALANCE=1000
+BOT_MAX_POSITION_SIZE=100
+BOT_LEVERAGE=2
+BOT_MIN_PROFIT_PERCENTAGE=0.1
+
+# Server
+BACKEND_PORT=5000
+FRONTEND_PORT=3000
+NODE_ENV=production
+```
+
+## ⚠️ Disclaimer
+
+**This is a high-risk trading bot. Use at your own risk.**
+- Test thoroughly in testnet first
+- Start with small amounts
+- Monitor actively
+- Never risk capital you can't afford to lose
+- Understand funding rate mechanics completely
+
+## 📄 License
+
+MIT License - See LICENSE file
+
+## 🤝 Support
+
+For issues and questions, please create an issue in the repository.
