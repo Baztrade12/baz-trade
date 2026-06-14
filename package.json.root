@@ -1,0 +1,32 @@
+{
+  "name": "baz-crypto-tech",
+  "version": "1.0.0",
+  "private": true,
+  "description": "BAZ Crypto Tech - High-Frequency Funding Rate Arbitrage Trading Bot with Institution-Grade Dashboard",
+  "workspaces": [
+    ".",
+    "dashboard"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev --workspace=.\" \"npm run dev --workspace=dashboard\"",
+    "dev:bot": "npm run dev --workspace=.",
+    "dev:dashboard": "npm run dev --workspace=dashboard",
+    "build": "npm run build --workspaces",
+    "build:bot": "npm run build --workspace=.",
+    "build:dashboard": "npm run build --workspace=dashboard",
+    "start": "npm start --workspace=.",
+    "start:dashboard": "npm start --workspace=dashboard",
+    "test": "npm run test --workspaces",
+    "lint": "npm run lint --workspaces"
+  },
+  "keywords": [
+    "crypto",
+    "trading",
+    "binance",
+    "funding-rate",
+    "arbitrage",
+    "dashboard"
+  ],
+  "author": "Baztrade12",
+  "license": "MIT"
+}
