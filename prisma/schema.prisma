@@ -1,0 +1,136 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id            String   @id @default(cuid())
+  totalBalance  Float    @default(0)
+  availableBalance Float @default(0)
+  usedMargin    Float    @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  positions     Position[]
+  trades        Trade[]
+  portfolioMetrics PortfolioMetrics[]
+}
+
+model Position {
+  id              String   @id @default(cuid())
+  accountId       String
+  symbol          String
+  side            String   // LONG or SHORT
+  quantity        Float
+  entryPrice      Float
+  currentPrice    Float    @default(0)
+  leverage        Int
+  openTime        DateTime @default(now())
+  closeTime       DateTime?
+  status          String   // OPEN, CLOSED, LIQUIDATED
+  unrealizedPnL   Float    @default(0)
+  realizedPnL     Float    @default(0)
+  fundingPaid     Float    @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  account         Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  @@index([accountId])
+  @@index([symbol])
+  @@index([status])
+}
+
+model Trade {
+  id              String   @id @default(cuid())
+  accountId       String
+  symbol          String
+  side            String   // BUY or SELL
+  quantity        Float
+  price           Float
+  executedAt      DateTime @default(now())
+  orderId         String
+  commission      Float
+  profitLoss      Float    @default(0)
+  isFundingTrade  Boolean  @default(false)
+  fundingRate     Float    @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  account         Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  @@index([accountId])
+  @@index([symbol])
+  @@index([executedAt])
+}
+
+model PortfolioMetrics {
+  id                String   @id @default(cuid())
+  accountId         String
+  totalBalance      Float
+  availableBalance  Float
+  usedMargin        Float
+  marginRatio       Float
+  unrealizedPnL     Float
+  realizedPnL       Float
+  totalPnL          Float
+  roi               Float
+  winRate           Float
+  dailyReturn       Float
+  monthlyReturn     Float
+  yearlyReturn      Float
+  sharpeRatio       Float
+  maxDrawdown       Float
+  timestamp         DateTime @default(now())
+  createdAt         DateTime @default(now())
+
+  account           Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  @@index([accountId])
+  @@index([timestamp])
+}
+
+model BotState {
+  id              String   @id @default(cuid())
+  isRunning       Boolean  @default(false)
+  uptime          Int      @default(0)
+  totalTrades     Int      @default(0)
+  successfulTrades Int    @default(0)
+  failedTrades    Int      @default(0)
+  lastStartTime   DateTime?
+  lastStopTime    DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model FundingRateSnapshot {
+  id              String   @id @default(cuid())
+  symbol          String
+  fundingRate     Float
+  fundingTime     DateTime
+  nextFundingTime DateTime
+  createdAt       DateTime @default(now())
+
+  @@index([symbol])
+  @@index([createdAt])
+}
+
+model TradingLog {
+  id              String   @id @default(cuid())
+  action          String   // SCAN, EXECUTE, CLOSE, ERROR
+  symbol          String?
+  details         String   // JSON string for detailed info
+  success         Boolean
+  timestamp       DateTime @default(now())
+  createdAt       DateTime @default(now())
+
+  @@index([timestamp])
+  @@index([action])
+}
