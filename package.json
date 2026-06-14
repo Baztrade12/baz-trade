@@ -1,0 +1,51 @@
+{
+  "name": "baz-crypto-tech",
+  "version": "1.0.0",
+  "description": "High-Frequency Funding Rate Arbitrage Trading Bot with Institution-Grade Dashboard",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "nodemon --exec ts-node src/bot/index.ts",
+    "build": "tsc",
+    "start": "node dist/bot/index.js",
+    "dashboard-dev": "cd dashboard && npm run dev",
+    "dashboard-build": "cd dashboard && npm run build",
+    "test": "jest",
+    "lint": "eslint src/**/*.ts"
+  },
+  "keywords": [
+    "crypto",
+    "trading",
+    "binance",
+    "funding-rate",
+    "arbitrage",
+    "high-frequency"
+  ],
+  "author": "Baztrade12",
+  "license": "MIT",
+  "dependencies": {
+    "binance-api-node": "^0.12.10",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "socket.io": "^4.7.2",
+    "prisma": "^5.7.0",
+    "redis": "^4.6.12",
+    "axios": "^1.6.2",
+    "decimal.js": "^10.4.3",
+    "winston": "^3.11.0",
+    "bull": "^4.11.5",
+    "joi": "^17.11.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/express": "^4.17.21",
+    "typescript": "^5.3.3",
+    "nodemon": "^3.0.2",
+    "ts-node": "^10.9.2",
+    "jest": "^29.7.0",
+    "@types/jest": "^29.5.10",
+    "ts-jest": "^29.1.1",
+    "eslint": "^8.55.0",
+    "@typescript-eslint/eslint-plugin": "^6.14.0",
+    "@typescript-eslint/parser": "^6.14.0"
+  }
+}
